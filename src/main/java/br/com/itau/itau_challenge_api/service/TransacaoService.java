@@ -11,9 +11,8 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
-import java.util.DoubleSummaryStatistics;
-import java.util.HashMap;
-import java.util.UUID;
+import java.time.ZoneOffset;
+import java.util.*;
 
 @Service
 public class TransacaoService {
@@ -49,14 +48,27 @@ public class TransacaoService {
     }
 
     public ResponseEntity<?> calcularEstatiscas() {
+
+        List<Transacao> listaSelecionada = transacaoRepository.listaTransacao.values().stream()
+                .filter(transacao -> transacao.dataHora()
+                        .isAfter(OffsetDateTime.now().minusMinutes(1)))
+                .toList();
+
         DoubleSummaryStatistics teste = new DoubleSummaryStatistics();
 
-        transacaoRepository.listaTransacao.values()
-                .forEach(transacao -> teste.accept(transacao.valor().doubleValue()));
+        listaSelecionada.forEach(transacao -> teste.accept(transacao.valor().doubleValue()));
 
-        Estatistica valores = new Estatistica();
+        double count = teste.getCount();
+        double sum = teste.getSum();
+        double avg = teste.getAverage();
+        double min = teste.getMin();
+        if (min == Double.POSITIVE_INFINITY) min = 0;
+        double max = teste.getMax();
+        if (max == Double.NEGATIVE_INFINITY) max = 0;
+
+        Estatistica valores = new Estatistica(count, sum, avg, min ,max);
         return ResponseEntity.status(HttpStatus.OK)
-                .body("Todas as informações foram apagadas com sucesso.");
+                .body(valores);
     }
 }
 

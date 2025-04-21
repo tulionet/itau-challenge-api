@@ -20,12 +20,18 @@ public class TransacaoController {
         return transacaoService.validarTransacao(transacao);
     }
 
-
+    @GetMapping
+    public ResponseEntity<?> buscarTodasTransacoes() {
+        return transacaoService.buscaTodasTransacoes();
+    }
 
     @DeleteMapping
     public ResponseEntity<?> deletarTodasTransacoes() {
         return transacaoService.deletarTodasTransacoes();
     }
 
-
+    @GetMapping("/estatistica")
+    public ResponseEntity<?> calcularEstatiscas() {
+        return transacaoService.calcularEstatiscas();
+    }
 }
