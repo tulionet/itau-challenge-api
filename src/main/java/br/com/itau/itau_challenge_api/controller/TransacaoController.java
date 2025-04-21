@@ -21,4 +21,11 @@ public class TransacaoController {
     }
 
 
+
+    @DeleteMapping
+    public ResponseEntity<?> deletarTodasTransacoes() {
+        return transacaoService.deletarTodasTransacoes();
+    }
+
+
 }
