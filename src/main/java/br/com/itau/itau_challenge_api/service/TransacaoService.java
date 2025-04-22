@@ -5,13 +5,13 @@ import br.com.itau.itau_challenge_api.model.Estatistica;
 import br.com.itau.itau_challenge_api.model.Transacao;
 import br.com.itau.itau_challenge_api.repository.TransacaoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.support.NullValue;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
 import java.util.*;
 
 @Service
@@ -22,12 +22,9 @@ public class TransacaoService {
 
     public ResponseEntity<?> validarTransacao(Transacao transacao) {
 
-        if (transacao.dataHora().isAfter(OffsetDateTime.now())) {
-            throw new TransacaoInvalidaException("A transação tem data futura e não é válida.");
-        }
-        if (transacao.valor().compareTo(BigDecimal.ZERO) <= 0) {
-            throw new TransacaoInvalidaException("A transação contêm valor negativo ou zero.");
-        }
+        if (transacao.valor() == null || transacao.dataHora() == null) throw new TransacaoInvalidaException("A transação contêm valores nulos.");
+        if (transacao.dataHora().isAfter(OffsetDateTime.now())) throw new TransacaoInvalidaException("A transação tem data futura e não é válida.");
+        if (transacao.valor().compareTo(BigDecimal.ZERO) <= 0) throw new TransacaoInvalidaException("A transação contêm valor negativo ou zero.");
 
         transacaoRepository.listaTransacao.put(UUID.randomUUID(), transacao);
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -35,9 +32,8 @@ public class TransacaoService {
     };
 
     public ResponseEntity<?> buscaTodasTransacoes() {
-        System.out.println(transacaoRepository.listaTransacao);
         return ResponseEntity.status(HttpStatus.OK)
-                .body("Toma tudo");
+                .body(transacaoRepository.listaTransacao);
     }
 
 
