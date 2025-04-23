@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/transacao")
 public class TransacaoController {
@@ -28,6 +30,11 @@ public class TransacaoController {
     @DeleteMapping
     public ResponseEntity<?> deletarTodasTransacoes() {
         return transacaoService.deletarTodasTransacoes();
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deletarTrransacao(@PathVariable UUID id) {
+        return transacaoService.deletarTransacao(id);
     }
 
     @GetMapping("/estatistica")

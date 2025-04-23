@@ -5,7 +5,6 @@ import br.com.itau.itau_challenge_api.model.Estatistica;
 import br.com.itau.itau_challenge_api.model.Transacao;
 import br.com.itau.itau_challenge_api.repository.TransacaoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.support.NullValue;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -65,6 +64,16 @@ public class TransacaoService {
         Estatistica valores = new Estatistica(count, sum, avg, min ,max);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(valores);
+    }
+
+    public ResponseEntity<?> deletarTransacao(UUID id) {
+        if (transacaoRepository.listaTransacao.get(id) != null) {
+            transacaoRepository.listaTransacao.remove(id);
+            return ResponseEntity.status(HttpStatus.FOUND)
+                    .body("Transação deletada com sucesso!");
+        };
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body("Transação não encontrada.");
     }
 }
 
